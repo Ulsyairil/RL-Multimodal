@@ -1,0 +1,51 @@
+[
+  {
+    "shot": "after-desktop",
+    "asideWidth": 288,
+    "headerWithinViewport": true,
+    "footerWithinViewport": true,
+    "footerBottomIsAtViewportBottom": 0,
+    "navScrolls": false,
+    "navScrollableClassApplied": true,
+    "pageOverflowsHorizontally": false
+  },
+  {
+    "shot": "before-desktop",
+    "asideWidth": 288,
+    "headerWithinViewport": true,
+    "footerWithinViewport": true,
+    "footerBottomIsAtViewportBottom": 190,
+    "navScrolls": false,
+    "navScrollableClassApplied": false,
+    "pageOverflowsHorizontally": false
+  },
+  {
+    "shot": "after-short-viewport",
+    "asideWidth": 288,
+    "headerWithinViewport": true,
+    "footerWithinViewport": true,
+    "footerBottomIsAtViewportBottom": 0,
+    "navScrolls": true,
+    "navScrollableClassApplied": true,
+    "pageOverflowsHorizontally": false
+  },
+  {
+    "shot": "after-short-viewport-scrolled",
+    "headerWithinViewportAfterScroll": true,
+    "footerWithinViewportAfterScroll": true
+  },
+  {
+    "shot": "before-short-viewport",
+    "asideWidth": 288,
+    "headerWithinViewport": true,
+    "footerWithinViewport": false,
+    "footerBottomIsAtViewportBottom": -190,
+    "navScrolls": false,
+    "navScrollableClassApplied": false,
+    "pageOverflowsHorizontally": false
+  },
+  {
+    "shot": "after-mobile-drawer-open",
+    "drawerVisible": true
+  }
+]

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar Overflow — Before (buggy)</title>
+    <link rel="stylesheet" href="/src/main.css" />
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <div class="flex min-h-screen">
+      <aside class="flex w-72 flex-col border-r border-gray-200 bg-white">
+        <header class="flex items-center gap-3 border-b border-gray-100 px-4 py-4">
+          <div class="h-9 w-9 rounded-full bg-gray-300" aria-hidden="true"></div>
+          <span class="text-sm font-semibold text-gray-900">
+            Alexandra Middleton-Hernandez
+          </span>
+        </header>
+
+        <nav class="px-3 py-4">
+          <ul class="space-y-1">
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Dashboard</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Project overview</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Datasets & assets</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Annotations queue</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Model evaluation runs</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Confidence scoring</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Label quality reports</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Export & integration config</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">OversightConfigurationTasksInitiative22Settings</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">User & team management</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Billing, plans and invoices</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Notification preferences center</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Activity audit history log</a></li>
+            <li><a class="block rounded-md px-3 py-2 text-sm text-gray-700">Help, documentation and API keys</a></li>
+          </ul>
+        </nav>
+
+        <footer class="border-t border-gray-100 p-4">
+          <p class="text-xs text-gray-500">Signed in as alexandra.m.h@example.com</p>
+        </footer>
+      </aside>
+
+      <main class="min-w-0 flex-1 px-6 py-8">
+        <h1 class="text-2xl font-bold text-gray-900">Projects</h1>
+        <p class="mt-2 max-w-2xl text-gray-600">
+          In this buggy version the sidebar is not height-constrained: the growing
+          nav list stretches the whole page, the top bar scrolls away, the footer
+          ends up far below the fold, and a long option label makes the page scroll
+          sideways.
+        </p>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <article class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 class="font-semibold">Objects pipeline</h2>
+            <p class="mt-1 text-sm text-gray-600">12,400 items labeled, 3 in review.</p>
+          </article>
+          <article class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 class="font-semibold">Scenes at dusk</h2>
+            <p class="mt-1 text-sm text-gray-600">8,210 items labeled, 22 flagged.</p>
+          </article>
+          <article class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <h2 class="font-semibold">Packaging QA</h2>
+            <p class="mt-1 text-sm text-gray-600">4,025 items labeled, 0 in review.</p>
+          </article>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
