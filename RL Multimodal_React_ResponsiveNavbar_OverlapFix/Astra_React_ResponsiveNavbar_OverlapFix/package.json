@@ -1,26 +1,19 @@
 {
   "name": "react-responsive-navbar-overlap-fix",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "verify": "node scripts/screenshot.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.11",
-    "@vitejs/plugin-react": "^4.4.1",
-    "playwright": "^1.50.0",
-    "tailwindcss": "^4.1.11",
-    "vite": "^6.3.5"
-  },
-  "allowScripts": {
-    "esbuild@0.25.12": true
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
   }
 }

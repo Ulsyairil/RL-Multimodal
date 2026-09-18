@@ -1,60 +1,61 @@
-# Tailwind Sidebar Overflow Fix
-
-**Author:** Astra
+# Sidebar Overflow Fix
 
 ## 1. What I was asked to fix
 
-The request showed a sidebar whose navigation list was longer than the viewport
-height, causing the whole page to grow: the user header scrolled off the top, the
-profile footer dropped below the fold, and a long unbroken label threatened
-horizontal page overflow at every viewport size. I was asked to fix the overflow
-without changing the sidebar's overall design.
+The sidebar's navigation list was taller than the viewport. Because the sidebar
+was not height-constrained, the whole page stretched: the user header scrolled
+off the top, the profile footer fell below the fold, and a single long
+unbroken label threatened horizontal page overflow at every viewport size.
+The fix had to stop the overflow without redesigning the sidebar.
 
 ## 2. What I changed
 
 I constrained the sidebar to the viewport with `fixed inset-y-0 left-0 ... flex
-flex-col overflow-x-hidden`, pinned the header and footer with `shrink-0`, and made
-only the nav region scroll using `flex-1 min-h-0 overflow-y-auto`. Long labels now
-wrap (`break-words`) so nothing forces a horizontal scrollbar, and on small screens
-(`lg` breakpoint) the sidebar becomes a closable full-height overlay with a backdrop
-and a labeled close button. The page `main` scrolls independently with `lg:pl-72`.
-I reused the existing branding header, footer, and nav items.
+flex-col overflow-x-hidden`, pinned the header and footer with `shrink-0`, and
+confined scrolling to the nav region alone (`flex-1 min-h-0 overflow-y-auto
+overscroll-contain`). Long labels wrap with `break-words` so nothing forces a
+horizontal scrollbar. On small screens (`lg` breakpoint and below) the sidebar
+becomes a closable full-height overlay behind a backdrop, with a labeled close
+button, Escape-key dismissal, focus returning to the toggle, and `aria-expanded`
+state. The main content scrolls independently and reserves space with `lg:pl-72`.
 
-Files: `index.html` (the fix), `before.html` (buggy baseline for comparison),
-`vite.config.js`, `src/main.css`.
+Files: `src/AfterSidebar.jsx` (the fix and buggy baseline via `?view=before`),
+`src/BuggySidebar`, `src/Content.jsx`, `src/App.jsx`, `src/navData.js`.
 
 ## 3. How to run my submission
 
 ```bash
 npm install
-npm run dev          # open / (fixed) and /before.html (buggy baseline)
+npm run dev          # http://localhost:5173 — fixed version (default)
+# http://localhost:5173/?view=before — buggy baseline for comparison
 npm run build
 npm run verify       # regenerates screenshot evidence + layout checks
 ```
 
 ## 4. My rendered verification
 
-I measured the rendered layout in headless Chromium (Playwright) — DOM geometry, not
-a claimed diff:
+I verified the rendered output in headless Chromium (Playwright) — DOM
+geometry, not a claimed diff:
 
 - **after / short viewport (1280×520):** header + footer fully visible, footer flush
   with the bottom (`footerBottomIsAtViewportBottom: 0`), nav scrolls
-  (`navScrolls: true`), no horizontal overflow. After scrolling the nav to the very
-  bottom, both header and footer **stay pinned**.
-- **before / short viewport (1280×520):** footer sits **190px below the fold**
-  (`footerWithinViewport: false`) and the nav is not scrollable, so the whole page
-  had to scroll.
-- **after / desktop (1440×900):** 288px sidebar, header + footer pinned, no
+  (`navScrolls: true`), no horizontal overflow.
+- **after / short viewport, nav scrolled to bottom:** header and footer stay pinned
+  (`headerWithinViewportAfterScroll` / `footerWithinViewportAfterScroll: true`).
+- **before / short viewport (1280×520):** footer sits below the fold
+  (`footerWithinViewport: false`, `footerBottomIsAtViewportBottom: -186`) and the nav
+  is not scrollable, so the whole page had to scroll.
+- **after / desktop (1440×900):** 288 px sidebar, header + footer pinned, no
   horizontal overflow.
 - **after / mobile (390×844):** "Open menu" opens the overlay drawer
-  (`drawerVisible: true`).
-- **before / desktop:** footer 190px off the bottom of the initial viewport.
+  (`drawerVisible: true`), Escape and backdrop both dismiss it.
+- **before / desktop:** footer ~190 px off the bottom of the initial viewport.
 
 Evidence: `verification/sidebar-*.png` + `verification/sidebar-check-summary.json`.
 
 ## 5. Honest disclosure
 
-Tested: in-sidebar scrolling with pinned header/footer, and the mobile drawer open
-interaction. Not tested: keyboard-only drawer dismissal and screen-reader
-announcements — the drawer has a labeled close button and backdrop click-to-close,
-but no automated accessibility audit was run.
+Tested: in-sidebar scrolling with pinned header/footer, the mobile drawer open
+interaction, and Escape-key + backdrop dismissal. Not tested: screen-reader
+announcements — the drawer is a labeled `dialog` with `aria-modal`, focus moves
+into and out of it correctly, but no automated accessibility audit was run.

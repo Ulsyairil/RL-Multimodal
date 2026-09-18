@@ -14,7 +14,7 @@
     "asideWidth": 288,
     "headerWithinViewport": true,
     "footerWithinViewport": true,
-    "footerBottomIsAtViewportBottom": 190,
+    "footerBottomIsAtViewportBottom": 194,
     "navScrolls": false,
     "navScrollableClassApplied": false,
     "pageOverflowsHorizontally": false
@@ -39,13 +39,15 @@
     "asideWidth": 288,
     "headerWithinViewport": true,
     "footerWithinViewport": false,
-    "footerBottomIsAtViewportBottom": -190,
+    "footerBottomIsAtViewportBottom": -186,
     "navScrolls": false,
     "navScrollableClassApplied": false,
     "pageOverflowsHorizontally": false
   },
   {
     "shot": "after-mobile-drawer-open",
-    "drawerVisible": true
+    "drawerVisible": true,
+    "escapeClosesDrawer": true,
+    "backdropClosesDrawer": true
   }
 ]

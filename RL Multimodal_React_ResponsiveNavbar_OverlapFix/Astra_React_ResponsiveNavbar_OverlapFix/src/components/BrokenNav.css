@@ -1,0 +1,53 @@
+.broken-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 48px; /* shorter than the content, intentionally causing overlap */
+  padding: 0 1rem;
+  background: #7f1d1d;
+  border-bottom: 1px solid rgba(220, 38, 38, 0.6);
+  /* Mimics `fixed` (removed from document flow) inside the demo box,
+     so content below slides up and gets covered — this is the overlap bug. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+.broken-nav__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.broken-nav__logo {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #fecaca;
+  color: #7f1d1d;
+  font-weight: 800;
+}
+
+.broken-nav__links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.broken-nav__links a {
+  color: #fecaca;
+  font-size: 0.82rem;
+  text-decoration: none;
+}
+
+.broken-nav__links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
