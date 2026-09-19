@@ -1,126 +1,199 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
-const SECTIONS = [
+export const SIDEBAR_EXPANDED = 280
+export const SIDEBAR_COLLAPSED = 84
+
+const BRAND = 'Nexus Studio'
+
+const NAV_GROUPS = [
   {
-    title: 'Overview',
+    label: 'Main Menu',
     items: [
-      { label: 'Dashboard', active: true },
-      { label: 'Training status', active: false },
+      { label: 'Dashboard', icon: '📊', active: true },
+      { label: 'Analytics', icon: '📈' },
+      { label: 'Products', icon: '📦' },
+      { label: 'Customers', icon: '👥' },
+      { label: 'Transactions', icon: '💳' },
+      { label: 'Discounts', icon: '🏷️' },
     ],
   },
   {
-    title: 'Data',
+    label: 'Management',
     items: [
-      { label: 'Datasets', active: false },
-      { label: 'Annotations queue', active: false },
-      { label: 'Label quality reports', active: false },
+      { label: 'Content', icon: '📝' },
+      { label: 'Media Library', icon: '📁' },
+      { label: 'Messages', icon: '📩', badge: 4 },
     ],
   },
   {
-    title: 'Training',
+    label: 'System',
     items: [
-      { label: 'Active runs', active: false },
-      { label: 'Hyperparameter sweeps', active: false },
-      { label: 'Reward model tuning', active: false },
-      { label: 'Policy optimization logs', active: false },
-    ],
-  },
-  {
-    title: 'Evaluation',
-    items: [
-      { label: 'Model benchmarks', active: false },
-      { label: 'Confidence scoring', active: false },
-      { label: 'EvaluationConfigurationTasksDashboardReportsSettingsPage',
-        active: false },
-    ],
-  },
-  {
-    title: 'Team',
-    items: [
-      { label: 'Members & roles', active: false },
-      { label: 'Audit history', active: false },
-      { label: 'API keys', active: false },
+      { label: 'Settings', icon: '⚙️' },
+      { label: 'Help & Support', icon: '❓' },
     ],
   },
 ]
 
-export default function Sidebar({ mobileOpen, onClose }) {
-  const [collapsed, setCollapsed] = useState({})
-  const navRef = useRef(null)
+function BrandMark({ compact }) {
+  return (
+    <div
+      className={`flex items-center gap-3 ${compact ? 'lg:justify-center lg:px-0' : ''}`}
+    >
+      <div
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-500 text-sm font-bold text-slate-900"
+        aria-hidden="true"
+      >
+        N
+      </div>
+      <div className={`min-w-0 ${compact ? 'lg:hidden' : ''}`}>
+        <span className="block truncate text-sm font-semibold text-white">
+          {BRAND.toUpperCase()}
+        </span>
+      </div>
+      <svg
+        className={`h-4 w-4 shrink-0 text-slate-400 ${compact ? 'lg:hidden' : ''}`}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="m6 9 6 6 6-6" />
+      </svg>
+    </div>
+  )
+}
 
+export default function Sidebar({ collapsed, onToggleCollapse, mobileOpen, onClose }) {
   useEffect(() => {
     function handleKey(e) {
       if (e.key === 'Escape') onClose()
     }
-    if (mobileOpen) {
-      document.addEventListener('keydown', handleKey)
-      return () => document.removeEventListener('keydown', handleKey)
-    }
-  }, [mobileOpen, onClose])
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [onClose])
 
-  const toggleSection = (title) => {
-    setCollapsed((prev) => ({ ...prev, [title]: !prev[title] }))
-  }
+  const itemClass = (item) =>
+    'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors' +
+    (collapsed ? ' lg:justify-center lg:px-0' : '') +
+    (item.active
+      ? ' bg-emerald-500/10 font-medium text-emerald-400'
+      : ' text-slate-400 hover:bg-slate-800 hover:text-white')
 
- return (
+  return (
     <>
-      {/* Desktop sidebar — fixed so header/footer stay pinned */}
       <aside
-        className="fixed inset-y-0 left-0 z-30 hidden w-[280px] flex-col overflow-x-hidden border-r border-slate-700 bg-slate-900 text-slate-300 lg:flex"
+        className={`fixed inset-y-0 left-0 z-30 hidden flex-col overflow-x-hidden border-r border-slate-800 bg-slate-900 text-slate-300 transition-[width] duration-200 ease-in-out lg:flex ${
+          collapsed ? 'lg:w-[84px]' : 'lg:w-[280px]'
+        }`}
         aria-label="Sidebar"
       >
-        <header className="flex shrink-0 items-center gap-3 border-b border-slate-700 px-5 py-4">
-          <div className="h-8 w-8 shrink-0 rounded-lg bg-emerald-500" aria-hidden="true" />
-          <span className="min-w-0 truncate text-sm font-semibold text-white">
-            RL Multimodal
-          </span>
+        <header className="flex h-16 shrink-0 items-center px-5">
+          <BrandMark compact={collapsed} />
         </header>
 
-        <nav ref={navRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4" aria-label="Primary">
-          {SECTIONS.map((section) => {
-            const isCollapsed = collapsed[section.title]
-            return (
-              <div key={section.title} className="mb-2">
-                <button
-                  onClick={() => toggleSection(section.title)}
-                  className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-300"
-                >
-                  {section.title}
-                  <span className={`text-slate-600 transition-transform ${isCollapsed ? '' : 'rotate-90'}`}>
-                    ▸
-                  </span>
-                </button>
-                {!isCollapsed && (
-                  <ul className="mt-0.5 space-y-0.5">
-                    {section.items.map((item) => (
-                      <li key={item.label}>
-                        <a
-                          href="#"
-                          className={
-                            'block rounded-md px-3 py-2 text-sm transition-colors' +
-                            (item.active
-                              ? ' bg-emerald-500/10 font-medium text-emerald-400'
-                              : ' text-slate-400 hover:bg-slate-800 hover:text-white')
-                            + (item.label.startsWith('EvaluationConfiguration') ? ' break-words' : '')
-                          }
+        <nav
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4"
+          aria-label="Primary"
+        >
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className="mb-3">
+              <p
+                className={`px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 ${
+                  collapsed ? 'lg:hidden' : ''
+                }`}
+              >
+                {group.label}
+              </p>
+              <ul className="space-y-0.5">
+                {group.items.map((item) => (
+                  <li key={item.label}>
+                    <a href="#" title={item.label} className={itemClass(item)}>
+                      <span
+                        className="grid w-6 shrink-0 place-items-center text-base leading-none"
+                        aria-hidden="true"
+                      >
+                        {item.icon}
+                      </span>
+                      <span className={`truncate ${collapsed ? 'lg:hidden' : ''}`}>
+                        {item.label}
+                      </span>
+                      {item.badge ? (
+                        <span
+                          className={`ml-auto shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 ${
+                            collapsed ? 'lg:hidden' : ''
+                          }`}
                         >
-                          {item.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )
-          })}
+                          {item.badge}
+                        </span>
+                      ) : null}
+                      {item.active ? (
+                        <span
+                          className={`ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400 ${
+                            collapsed ? 'lg:absolute lg:right-2.5 lg:ml-0' : ''
+                          }`}
+                          aria-hidden="true"
+                        />
+                      ) : null}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
 
-        <footer className="shrink-0 border-t border-slate-700 px-5 py-3">
-          <p className="text-xs text-slate-500">Signed in as riley.k@example.com</p>
+        <footer className="shrink-0 border-t border-slate-800 px-3 py-3">
+          <div
+            className={`flex items-center gap-3 px-1 py-1 ${
+              collapsed ? 'lg:justify-center lg:px-0' : ''
+            }`}
+          >
+            <div
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-xs font-bold text-emerald-400"
+              aria-hidden="true"
+            >
+              AM
+            </div>
+            <div className={`min-w-0 ${collapsed ? 'lg:hidden' : ''}`}>
+              <p className="truncate text-sm font-medium text-white">Alex Morgan</p>
+              <p className="truncate text-xs text-slate-500">Product Designer</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            id="collapseSidebar"
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={onToggleCollapse}
+            className={`mt-1 flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-white ${
+              collapsed ? 'lg:justify-center lg:px-0' : ''
+            }`}
+          >
+            <svg
+              className={`h-5 w-5 shrink-0 transition-transform duration-200 ${
+                collapsed ? 'rotate-180' : ''
+              }`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            <span className={`truncate ${collapsed ? 'lg:hidden' : ''}`}>
+              Collapse Sidebar
+            </span>
+          </button>
         </footer>
       </aside>
 
-      {/* Mobile drawer */}
       <div
         className={`fixed inset-0 z-50 ${mobileOpen ? 'flex' : 'hidden'}`}
         role="dialog"
@@ -134,10 +207,8 @@ export default function Sidebar({ mobileOpen, onClose }) {
           onClick={onClose}
         />
         <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col overflow-x-hidden bg-slate-900 text-slate-300 shadow-xl">
-          <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-700 px-5 py-4">
-            <span className="min-w-0 truncate text-sm font-semibold text-white">
-              RL Multimodal
-            </span>
+          <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-800 px-5 py-4">
+            <BrandMark />
             <button
               type="button"
               id="closeSidebar"
@@ -149,37 +220,42 @@ export default function Sidebar({ mobileOpen, onClose }) {
             </button>
           </header>
           <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4" aria-label="Mobile">
-            {SECTIONS.map((section) => {
-              const isCollapsed = collapsed[section.title]
-              return (
-                <div key={section.title} className="mb-2">
-                  <button
-                    onClick={() => toggleSection(section.title)}
-                    className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-300"
-                  >
-                    {section.title}
-                    <span className={`text-slate-600 transition-transform ${isCollapsed ? '' : 'rotate-90'}`}>
-                      ▸
-                    </span>
-                  </button>
-                  {!isCollapsed && (
-                    <ul className="mt-0.5 space-y-0.5">
-                      {section.items.map((item) => (
-                        <li key={item.label}>
-                          <a
-                            href="#"
-                            className="block rounded-md px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
-                            onClick={onClose}
-                          >
-                            {item.label}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )
-            })}
+            {NAV_GROUPS.map((group) => (
+              <div key={group.label} className="mb-3">
+                <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                  {group.label}
+                </p>
+                <ul className="space-y-0.5">
+                  {group.items.map((item) => (
+                    <li key={item.label}>
+                      <a
+                        href="#"
+                        onClick={onClose}
+                        className={
+                          'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors' +
+                          (item.active
+                            ? ' bg-emerald-500/10 font-medium text-emerald-400'
+                            : ' text-slate-400 hover:bg-slate-800 hover:text-white')
+                        }
+                      >
+                        <span
+                          className="grid w-6 shrink-0 place-items-center text-base leading-none"
+                          aria-hidden="true"
+                        >
+                          {item.icon}
+                        </span>
+                        <span className="truncate">{item.label}</span>
+                        {item.badge ? (
+                          <span className="ml-auto shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                            {item.badge}
+                          </span>
+                        ) : null}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </nav>
         </div>
       </div>

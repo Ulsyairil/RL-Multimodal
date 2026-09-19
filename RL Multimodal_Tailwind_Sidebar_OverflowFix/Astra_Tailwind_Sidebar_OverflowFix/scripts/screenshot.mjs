@@ -39,13 +39,10 @@ const layoutCheck = async (url, viewport) => {
   return page.evaluate(() => {
     const aside = document.querySelector('aside')
     const footer = aside?.querySelector('footer')
-    const header = aside?.querySelector('header')
     const nav = aside?.querySelector('nav')
     const fb = footer?.getBoundingClientRect()
-    const hb = header?.getBoundingClientRect()
     return {
       asideWidth: aside ? Math.round(aside.getBoundingClientRect().width) : null,
-      headerWithinViewport: hb && hb.top >= 0 && hb.bottom <= window.innerHeight,
       footerWithinViewport: fb && fb.top >= 0 && fb.bottom <= window.innerHeight,
       footerBottomIsAtViewportBottom: fb ? Math.round(window.innerHeight - fb.bottom) : null,
       navScrolls: nav ? nav.scrollHeight > nav.clientHeight : null,
@@ -55,23 +52,111 @@ const layoutCheck = async (url, viewport) => {
   })
 }
 
-const overlayCheck = async (url, viewport) => {
-  await page.setViewportSize(viewport)
-  await page.goto(url, { waitUntil: 'networkidle' })
-  return page.evaluate(() => {
-    const header = document.querySelector('header')
+const themeCheck = async () => {
+  await page.evaluate(() => document.querySelector('button[aria-label*="theme"]').click())
+  await page.waitForTimeout(300)
+  const darkOn = await page.evaluate(() => ({
+    htmlHasDark: document.documentElement.classList.contains('dark'),
+    asideBg: getComputedStyle(document.querySelector('aside')).backgroundColor,
+  }))
+  await page.screenshot({ path: `${OUT}/sidebar-after-desktop-dark.png` })
+
+  await page.evaluate(() => document.querySelector('button[aria-label*="theme"]').click())
+  await page.waitForTimeout(300)
+  const darkOff = await page.evaluate(() => !document.documentElement.classList.contains('dark'))
+  return { ...darkOn, darkOff }
+}
+
+const drawerState = () =>
+  page.evaluate(() => {
+    const aside = document.getElementById('appSidebar')
+    const btn = document.getElementById('openSidebar')
+    const collapse = document.getElementById('collapseSidebar')
+    const backdrop = document.getElementById('backdrop')
     const main = document.querySelector('main')
-    const hb = header?.getBoundingClientRect()
-    const firstH = main?.querySelector('h1')
-    const firstTop = firstH ? firstH.getBoundingClientRect().top : null
+    const header = document.getElementById('appHeader')
+    const r = aside ? aside.getBoundingClientRect() : null
     return {
-      headerHeight: hb?.height ?? null,
-      headerAtTop: hb ? hb.top === 0 : null,
-      firstHeadingTop: firstTop !== null ? Math.round(firstTop) : null,
-      overlapsHero: firstTop !== null && firstTop < (hb?.height ?? 0),
-      bodyScrollWidthPaintWidth: document.body.scrollWidth > window.innerWidth,
+      headerPresent: !!header,
+      hamburgerExpanded: btn.getAttribute('aria-expanded'),
+      collapseExpanded: collapse?.getAttribute('aria-expanded') ?? null,
+      asideVisible: r ? r.right > 0 && r.left < window.innerWidth : false,
+      asideWidth: r ? Math.round(r.width) : null,
+      viewportWidth: window.innerWidth,
+      expectedHalf: Math.round(window.innerWidth / 2),
+      asideRight: r ? Math.round(r.right) : null,
+      backdropOpacity: getComputedStyle(backdrop).opacity,
+      mainPadLeft: Math.round(parseFloat(getComputedStyle(main).paddingLeft)),
+      bodyOverflow: getComputedStyle(document.body).overflow,
     }
   })
+
+const desktopCollapseCheck = async () => {
+  const open = await drawerState()
+  await page.evaluate(() => document.getElementById('collapseSidebar').click())
+  await page.waitForTimeout(400)
+  await page.screenshot({ path: `${OUT}/sidebar-after-desktop-collapsed.png` })
+  const collapsed = await drawerState()
+  await page.evaluate(() => document.getElementById('collapseSidebar').click())
+  await page.waitForTimeout(400)
+  const reOpened = await drawerState()
+  return { desktopOpen: open, desktopCollapsed: collapsed, desktopReOpened: reOpened }
+}
+
+const mobileDrawerCheck = async () => {
+  const closed = await drawerState()
+  await page.evaluate(() => document.getElementById('openSidebar').click())
+  await page.waitForTimeout(450)
+  const half = await drawerState()
+  await page.evaluate(() => document.getElementById('openSidebar').click())
+  await page.waitForTimeout(450)
+  const full = await drawerState()
+  await page.screenshot({ path: `${OUT}/sidebar-after-mobile-drawer.png` })
+
+  const escClosed = await page.evaluate(async () => {
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await new Promise((r) => setTimeout(r, 450))
+    return document.getElementById('appSidebar').getBoundingClientRect().right <= 0
+  })
+
+  await page.evaluate(() => document.getElementById('openSidebar').click())
+  await page.waitForTimeout(450)
+  const backdropClosed = await page.evaluate(async () => {
+    document.getElementById('backdrop').click()
+    await new Promise((r) => setTimeout(r, 450))
+    return document.getElementById('appSidebar').getBoundingClientRect().right <= 0
+  })
+
+  return {
+    mobileClosed: closed,
+    mobileHalf: half,
+    mobileFull: full,
+    escapeClosesDrawer: escClosed,
+    backdropClosesDrawer: backdropClosed,
+  }
+}
+
+const darkMobileDrawerCheck = async () => {
+  await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(200)
+  await page.evaluate(() => document.querySelector('button[aria-label*="theme"]').click())
+  await page.waitForTimeout(300)
+  await page.evaluate(() => document.getElementById('openSidebar').click())
+  await page.waitForTimeout(450)
+  await page.screenshot({ path: `${OUT}/sidebar-after-mobile-drawer-dark.png` })
+  const drawer = await page.evaluate(() => {
+    const aside = document.getElementById('appSidebar')
+    return {
+      drawerBg: getComputedStyle(aside).backgroundColor,
+      width: Math.round(aside.getBoundingClientRect().width),
+      htmlHasDark: document.documentElement.classList.contains('dark'),
+    }
+  })
+  await page.evaluate(() => document.getElementById('openSidebar').click())
+  await page.waitForTimeout(450)
+  await page.evaluate(() => document.querySelector('button[aria-label*="theme"]').click())
+  await page.waitForTimeout(200)
+  return drawer
 }
 
 try {
@@ -81,9 +166,17 @@ try {
   const browser = await chromium.launch()
   page = await browser.newPage()
 
-  // After, desktop
+  // After, desktop (light, sidebar open at 288px)
   results.push({ shot: 'after-desktop', ...(await layoutCheck(`${BASE}/`, { width: 1440, height: 900 })) })
   await page.screenshot({ path: `${OUT}/sidebar-after-desktop.png` })
+
+  // Theme switcher (desktop)
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+  results.push({ shot: 'after-theme', ...(await themeCheck()) })
+
+  // Desktop: Collapse Sidebar button toggles 288px <-> 80px icon rail
+  results.push({ shot: 'after-desktop-collapse', ...(await desktopCollapseCheck()) })
 
   // Before, desktop (query param)
   results.push({ shot: 'before-desktop', ...(await layoutCheck(`${BASE}/?view=before`, { width: 1440, height: 900 })) })
@@ -103,11 +196,8 @@ try {
   await page.screenshot({ path: `${OUT}/sidebar-after-short-viewport-scrolled.png` })
   const scrolled = await page.evaluate(() => {
     const footer = document.querySelector('aside footer')
-    const header = document.querySelector('aside header')
     const fb = footer.getBoundingClientRect()
-    const hb = header.getBoundingClientRect()
     return {
-      headerWithinViewportAfterScroll: hb.top >= 0 && hb.bottom <= window.innerHeight,
       footerWithinViewportAfterScroll: fb.top >= 0 && fb.bottom <= window.innerHeight,
     }
   })
@@ -117,37 +207,14 @@ try {
   results.push({ shot: 'before-short-viewport', ...(await layoutCheck(`${BASE}/?view=before`, { width: 1280, height: 520 })) })
   await page.screenshot({ path: `${OUT}/sidebar-before-short-viewport.png` })
 
-  // After, mobile with drawer open
+  // After, mobile: hamburger cycles closed -> half -> full -> closed
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(200)
-  await page.evaluate(() => document.getElementById('openSidebar').click())
-  await page.waitForTimeout(200)
-  const drawerShown = await page.evaluate(() =>
-    document.getElementById('mobileSidebar').classList.contains('flex'),
-  )
-  await page.screenshot({ path: `${OUT}/sidebar-after-mobile-drawer-open.png` })
+  results.push({ shot: 'after-mobile-cycle', ...(await mobileDrawerCheck()) })
 
-  const escClosed = await page.evaluate(async () => {
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
-    await new Promise((r) => setTimeout(r, 100))
-    return !document.getElementById('mobileSidebar').classList.contains('flex')
-  })
-
-  await page.evaluate(() => document.getElementById('openSidebar').click())
-  await page.waitForTimeout(100)
-  const backdropClosed = await page.evaluate(async () => {
-    document.getElementById('backdrop').click()
-    await new Promise((r) => setTimeout(r, 100))
-    return !document.getElementById('mobileSidebar').classList.contains('flex')
-  })
-
-  results.push({
-    shot: 'after-mobile-drawer-open',
-    drawerVisible: drawerShown,
-    escapeClosesDrawer: escClosed,
-    backdropClosesDrawer: backdropClosed,
-  })
+  // After, mobile drawer in dark theme
+  results.push({ shot: 'after-mobile-drawer-dark', ...(await darkMobileDrawerCheck()) })
 
   await page.close()
   await browser.close()

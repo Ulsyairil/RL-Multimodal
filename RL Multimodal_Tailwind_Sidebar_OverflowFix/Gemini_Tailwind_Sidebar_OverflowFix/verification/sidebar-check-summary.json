@@ -5,7 +5,7 @@
     "headerWithinViewport": true,
     "footerWithinViewport": true,
     "footerBottomIsAtViewportBottom": 0,
-    "navScrolls": true,
+    "navScrolls": false,
     "navScrollableClassApplied": true,
     "pageOverflowsHorizontally": false
   },

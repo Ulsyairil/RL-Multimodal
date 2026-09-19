@@ -2,7 +2,6 @@
   {
     "shot": "after-desktop",
     "asideWidth": 288,
-    "headerWithinViewport": true,
     "footerWithinViewport": true,
     "footerBottomIsAtViewportBottom": 0,
     "navScrolls": false,
@@ -10,11 +9,58 @@
     "pageOverflowsHorizontally": false
   },
   {
+    "shot": "after-theme",
+    "htmlHasDark": true,
+    "asideBg": "oklch(0.208 0.042 265.755)",
+    "darkOff": true
+  },
+  {
+    "shot": "after-desktop-collapse",
+    "desktopOpen": {
+      "headerPresent": true,
+      "hamburgerExpanded": "false",
+      "collapseExpanded": "true",
+      "asideVisible": true,
+      "asideWidth": 288,
+      "viewportWidth": 1440,
+      "expectedHalf": 720,
+      "asideRight": 288,
+      "backdropOpacity": "0",
+      "mainPadLeft": 288,
+      "bodyOverflow": "visible"
+    },
+    "desktopCollapsed": {
+      "headerPresent": true,
+      "hamburgerExpanded": "false",
+      "collapseExpanded": "false",
+      "asideVisible": true,
+      "asideWidth": 80,
+      "viewportWidth": 1440,
+      "expectedHalf": 720,
+      "asideRight": 80,
+      "backdropOpacity": "0",
+      "mainPadLeft": 80,
+      "bodyOverflow": "visible"
+    },
+    "desktopReOpened": {
+      "headerPresent": true,
+      "hamburgerExpanded": "false",
+      "collapseExpanded": "true",
+      "asideVisible": true,
+      "asideWidth": 288,
+      "viewportWidth": 1440,
+      "expectedHalf": 720,
+      "asideRight": 288,
+      "backdropOpacity": "0",
+      "mainPadLeft": 288,
+      "bodyOverflow": "visible"
+    }
+  },
+  {
     "shot": "before-desktop",
     "asideWidth": 288,
-    "headerWithinViewport": true,
     "footerWithinViewport": true,
-    "footerBottomIsAtViewportBottom": 194,
+    "footerBottomIsAtViewportBottom": 258,
     "navScrolls": false,
     "navScrollableClassApplied": false,
     "pageOverflowsHorizontally": false
@@ -22,7 +68,6 @@
   {
     "shot": "after-short-viewport",
     "asideWidth": 288,
-    "headerWithinViewport": true,
     "footerWithinViewport": true,
     "footerBottomIsAtViewportBottom": 0,
     "navScrolls": true,
@@ -31,23 +76,65 @@
   },
   {
     "shot": "after-short-viewport-scrolled",
-    "headerWithinViewportAfterScroll": true,
     "footerWithinViewportAfterScroll": true
   },
   {
     "shot": "before-short-viewport",
     "asideWidth": 288,
-    "headerWithinViewport": true,
     "footerWithinViewport": false,
-    "footerBottomIsAtViewportBottom": -186,
+    "footerBottomIsAtViewportBottom": -122,
     "navScrolls": false,
     "navScrollableClassApplied": false,
     "pageOverflowsHorizontally": false
   },
   {
-    "shot": "after-mobile-drawer-open",
-    "drawerVisible": true,
+    "shot": "after-mobile-cycle",
+    "mobileClosed": {
+      "headerPresent": true,
+      "hamburgerExpanded": "false",
+      "collapseExpanded": "true",
+      "asideVisible": false,
+      "asideWidth": 288,
+      "viewportWidth": 390,
+      "expectedHalf": 195,
+      "asideRight": 0,
+      "backdropOpacity": "0",
+      "mainPadLeft": 0,
+      "bodyOverflow": "visible"
+    },
+    "mobileHalf": {
+      "headerPresent": true,
+      "hamburgerExpanded": "true",
+      "collapseExpanded": "true",
+      "asideVisible": true,
+      "asideWidth": 195,
+      "viewportWidth": 390,
+      "expectedHalf": 195,
+      "asideRight": 195,
+      "backdropOpacity": "1",
+      "mainPadLeft": 0,
+      "bodyOverflow": "hidden"
+    },
+    "mobileFull": {
+      "headerPresent": true,
+      "hamburgerExpanded": "true",
+      "collapseExpanded": "true",
+      "asideVisible": true,
+      "asideWidth": 390,
+      "viewportWidth": 390,
+      "expectedHalf": 195,
+      "asideRight": 390,
+      "backdropOpacity": "1",
+      "mainPadLeft": 0,
+      "bodyOverflow": "hidden"
+    },
     "escapeClosesDrawer": true,
     "backdropClosesDrawer": true
+  },
+  {
+    "shot": "after-mobile-drawer-dark",
+    "drawerBg": "oklch(0.208 0.042 265.755)",
+    "width": 195,
+    "htmlHasDark": true
   }
 ]
